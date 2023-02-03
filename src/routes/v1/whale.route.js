@@ -6,6 +6,7 @@ const debankController = require('../../controllers/crawl.debank.controller');
 
 const router = express.Router();
 
+// router.get('/crawl-debank-whale', auth('crawlWhales'), debankController.crawlWhale);
 router.get('/crawl-debank-whale', debankController.crawlWhale);
 
 module.exports = router;
