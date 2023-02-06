@@ -2,6 +2,8 @@ const express = require('express');
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
 const docsRoute = require('./docs.route');
+const whaleRoute = require('./whale.route');
+const nearRoute = require('./near.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -14,6 +16,14 @@ const defaultRoutes = [
   {
     path: '/users',
     route: userRoute,
+  },
+  {
+    path: '/whale',
+    route: whaleRoute,
+  },
+  {
+    path: '/near',
+    route: nearRoute,
   },
 ];
 
