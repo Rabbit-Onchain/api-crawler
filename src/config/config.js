@@ -60,4 +60,8 @@ module.exports = {
     },
     from: envVars.EMAIL_FROM,
   },
+  rpc_near: {
+    main_net: 'https://rpc.mainnet.near.org',
+    historical_main_net: 'https://archival-rpc.mainnet.near.org'
+  }
 };

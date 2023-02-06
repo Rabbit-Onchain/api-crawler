@@ -6,8 +6,8 @@ const nearController = require('../../controllers/crawl.nearblocks.controller');
 
 const router = express.Router();
 
-// router.get('/crawl-debank-whale', auth('crawlWhales'), debankController.crawlWhale);
 router.get('/crawl-near-tokens', nearController.crawlNearToken);
+router.get('/crawl-near-changes', nearController.crawlNearChanges);
 
 module.exports = router;
 

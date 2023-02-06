@@ -13,6 +13,15 @@ const crawlNearToken = catchAsync(async (req, res) => {
   res.send({});
 });
 
+const crawlNearChanges = catchAsync(async (req, res) => {
+
+  nearService.crawlNearChanges();
+
+  res.send({});
+});
+
+
 module.exports = {
   crawlNearToken,
+  crawlNearChanges,
 };
