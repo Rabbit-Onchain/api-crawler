@@ -14,7 +14,6 @@ const crawlNearToken = catchAsync(async (req, res) => {
 const crawlNearChanges = catchAsync(async (req, res) => {
   let maxId = 84679490;
   for (let b = 84678490; b <= maxId; b++) {
-    console.log('analyze block ' + b);
     await nearService.crawlNearChanges(b);
     delay(1000);
   }

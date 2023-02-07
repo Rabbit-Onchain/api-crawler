@@ -65,41 +65,49 @@ const crawlNearChanges = async (blockId) => {
   if (! blockId) {
     blockId = 84679490;
   }
+  
+  logger.info(`crawling block ${blockId}`);
 
-  let { body: data } = await moduleGot.got.post(config.rpc_near.main_net, {
-	  json: {
-		  "jsonrpc": "2.0",
-      "id": "dontcare",
-      "method": "EXPERIMENTAL_changes_in_block",
-      "params": {
-        "block_id": blockId
+  try {
+    let { body: data } = await moduleGot.got.post(config.rpc_near.main_net, {
+      json: {
+        "jsonrpc": "2.0",
+        "id": "dontcare",
+        "method": "EXPERIMENTAL_changes_in_block",
+        "params": {
+          "block_id": blockId
+        }
       }
-	  }
-  });
-  data = JSON.parse(data);
-
-  if (data && data['result'] && data['result']['changes']) {
-    await NearCrawlHist.create({
-      c_t: crawlThaleTypes.NEARRPC,
-      block_hash: data.result.block_hash,  
-      block_id: blockId
     });
+    data = JSON.parse(data);
 
-    // loop on changes
-    let changesType = [], accountIds = [];
-    for (let change of data.result.changes) {
-      changesType.push({
+    if (data && data['result'] && data['result']['changes']) {
+      await NearCrawlHist.create({
         c_t: crawlThaleTypes.NEARRPC,
-        change_type: change.type 
-      }); 
+        block_hash: data.result.block_hash,  
+        block_id: blockId
+      });
 
-      accountIds.push(change.account_id);
+      // loop on changes
+      let changesType = [], accountIds = [];
+      for (let change of data.result.changes) {
+        changesType.push({
+          c_t: crawlThaleTypes.NEARRPC,
+          change_type: change.type 
+        }); 
 
-      // analyze accounts
-      await crawlNearAccount(change.account_id);
+        accountIds.push(change.account_id);
+
+        // analyze accounts
+        await crawlNearAccount(change.account_id);
+      }
+
+      await NearChanges.insertMany(changesType);
     }
 
-    await NearChanges.insertMany(changesType);
+  } catch(e) {
+    console.log(`excaption on block ${blockId}`);
+    console.dir(e);
   }
 }
 
