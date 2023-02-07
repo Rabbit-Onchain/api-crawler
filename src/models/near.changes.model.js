@@ -6,7 +6,7 @@ const nearChangesSchema = mongoose.Schema(
   {
     c_t: {
       type: Number,
-      enum: [crawlThaleTypes.DEBANK],
+      enum: [crawlThaleTypes.NEARRPC],
       required: true,
     },
     change_type: {

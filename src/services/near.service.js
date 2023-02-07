@@ -62,7 +62,11 @@ const crawlNearBlockToken = async () => {
 const crawlNearChanges = async (blockId) => {
   const moduleGot = await import('got');
   // blockId = 84621471
-  const {data} = await moduleGot.post(config.rpc_near.main_net, {
+  if (! blockId) {
+    blockId = 84679490;
+  }
+
+  let { body: data } = await moduleGot.got.post(config.rpc_near.main_net, {
 	  json: {
 		  "jsonrpc": "2.0",
       "id": "dontcare",
@@ -71,7 +75,8 @@ const crawlNearChanges = async (blockId) => {
         "block_id": blockId
       }
 	  }
-  }).json();
+  });
+  data = JSON.parse(data);
 
   if (data && data['result'] && data['result']['changes']) {
     await NearCrawlHist.create({
@@ -100,8 +105,12 @@ const crawlNearChanges = async (blockId) => {
 
 const crawlNearAccount = async (accountId) => {
   const moduleGot = await import('got');
-  // blockId = 84621471
-  const {data} = await moduleGot.post(config.rpc_near.main_net, {
+  
+  if (! accountId) {
+    accountId = 84679490;
+  }
+  
+  let { body: data } = await moduleGot.got.post(config.rpc_near.main_net, {
 	  json: {
 		  "jsonrpc": "2.0",
       "id": "dontcare",
@@ -112,13 +121,14 @@ const crawlNearAccount = async (accountId) => {
         'account_id': accountId
       }
 	  }
-  }).json();
+  });
+  data = JSON.parse(data);
 
   if (data && data['result']) {
     await NearWhale.create({
       c_t: crawlThaleTypes.NEARRPC,
       adr: accountId,
-      amount: data.result.amount,
+      amount: data.result.amount / (10 ** 24),    // convert to near
       block_hash: data.result.block_hash,  
       block_height: data.result.block_height,
     });
@@ -127,4 +137,5 @@ const crawlNearAccount = async (accountId) => {
 
 module.exports = {
   crawlNearBlockToken,
+  crawlNearChanges,
 };

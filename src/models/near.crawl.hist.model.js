@@ -29,6 +29,6 @@ nearCrawlHistSchema.plugin(toJSON);
 /**
  * @typedef Token
  */
-const NearCrawlHist = mongoose.model('near_changes', nearCrawlHistSchema);
+const NearCrawlHist = mongoose.model('near_crawl_hist', nearCrawlHistSchema);
 
 module.exports = NearCrawlHist;

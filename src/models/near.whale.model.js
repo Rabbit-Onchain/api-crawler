@@ -37,6 +37,6 @@ nearWhaleSchema.plugin(toJSON);
 /**
  * @typedef Token
  */
-const NearWhale = mongoose.model('whale', nearWhaleSchema);
+const NearWhale = mongoose.model('whale_near', nearWhaleSchema);
 
 module.exports = NearWhale;
