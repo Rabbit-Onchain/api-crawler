@@ -25,17 +25,6 @@ module.exports = router;
  *     summary: Get top near tokens from nearblocks
  *     description: Get top near tokens from nearblocks
  *     tags: [Near]
- *     parameters:
- *       - in: min
- *         name: 
- *         schema:
- *           type: integer
- *         description: min 
- *       - in: max
- *         name: max
- *         schema:
- *           type: integer
- *         description: max 
  *     responses:
  *       "200":
  *         description: OK
@@ -52,6 +41,17 @@ module.exports = router;
  *     summary: Get block changes 
  *     description: Get block changes and crawl each account in blocks
  *     tags: [Near]
+ *     parameters:
+ *       - in: min
+ *         name: 
+ *         schema:
+ *           type: integer
+ *         description: min 
+ *       - in: max
+ *         name: max
+ *         schema:
+ *           type: integer
+ *         description: max 
  *     responses:
  *       "200":
  *         description: OK
