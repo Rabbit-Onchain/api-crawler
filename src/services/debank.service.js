@@ -4,7 +4,7 @@ const httpStatus = require('http-status');
 const { Whale } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { delay } = require('../utils/index');
-const { crawlThaleTypes } = require('../config/whale');
+const { crawlWhaleTypes } = require('../config/whale');
 
 const crawlDebankWhale = async () => {
   let start = 0, limit = 100, hasWhale = true, 
@@ -28,7 +28,7 @@ const crawlDebankWhale = async () => {
       countWhale += rs.data.whales.length;
       
       for(let i in rs.data.whales) {
-        rs.data.whales[i].c_t = crawlThaleTypes.DEBANK;
+        rs.data.whales[i].c_t = crawlWhaleTypes.DEBANK;
         rs.data.whales[i].adr = rs.data.whales[i].id;
         delete rs.data.whales[i].id;
         // await Whale.create(whale);

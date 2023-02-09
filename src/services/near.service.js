@@ -5,7 +5,7 @@ const httpStatus = require('http-status');
 const { NearCrawlHist, NearTokenWhale, NearChanges, NearWhale } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { delay } = require('../utils/index');
-const { crawlThaleTypes } = require('../config/whale');
+const { crawlWhaleTypes } = require('../config/whale');
 const { parse } = require('dotenv');
 
 // API count token on near: https://api.nearblocks.io/v1/fts/count?
@@ -44,7 +44,7 @@ const crawlNearBlockToken = async () => {
 
     if (rs && rs.tokens) {            
       for(let i in rs.tokens) {
-        rs.tokens[i].c_t = crawlThaleTypes.NEARBLOCKS;
+        rs.tokens[i].c_t = crawlWhaleTypes.NEARBLOCKS;
       }
 
       currentCount += rs.tokens.length;
@@ -83,7 +83,7 @@ const crawlNearChanges = async (blockId) => {
 
     if (data && data['result'] && data['result']['changes']) {
       await NearCrawlHist.create({
-        c_t: crawlThaleTypes.NEARRPC,
+        c_t: crawlWhaleTypes.NEARRPC,
         block_hash: data.result.block_hash,  
         block_id: blockId
       });
@@ -92,7 +92,7 @@ const crawlNearChanges = async (blockId) => {
       let changesType = [], accountIds = [];
       for (let change of data.result.changes) {
         changesType.push({
-          c_t: crawlThaleTypes.NEARRPC,
+          c_t: crawlWhaleTypes.NEARRPC,
           change_type: change.type 
         }); 
 
@@ -134,7 +134,7 @@ const crawlNearAccount = async (accountId) => {
 
   if (data && data['result']) {
     await NearWhale.create({
-      c_t: crawlThaleTypes.NEARRPC,
+      c_t: crawlWhaleTypes.NEARRPC,
       adr: accountId,
       amount: data.result.amount / (10 ** 24),    // convert to near
       block_hash: data.result.block_hash,  
