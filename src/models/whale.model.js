@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
-const { crawlThaleTypes } = require('../config/whale');
+const { crawlWhaleTypes } = require('../config/whale');
 
 const whaleSchema = mongoose.Schema(
   {
     c_t: {      // crawl type: DEBANK, NEARBLOCKS ....
       type: Number,
-      enum: [crawlThaleTypes.DEBANK],
+      enum: [crawlWhaleTypes.DEBANK],
       required: true,
     },
     adr: {
