@@ -5,11 +5,13 @@ const httpStatus = require('http-status');
 const { NearCrawlHist, NearTokenWhale, NearChanges, NearWhale } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { delay } = require('../utils/index');
-const { crawlWhaleTypes } = require('../config/whale');
+const { crawlSources } = require('../config/whale');
 const { parse } = require('dotenv');
+const {MONGO_ERROR_TYPES, isError} = require('../utils/mongodbCatch');
 
 // API count token on near: https://api.nearblocks.io/v1/fts/count?
 // API get token: https://api.nearblocks.io/v1/fts?&order=desc&sort=onchain_market_cap&page=1&per_page=50
+// API get lastest block: https://api.nearblocks.io/v1/stats
 
 // RPC on near https://rpc.mainnet.near.org
 // for historical data https://archival-rpc.mainnet.near.org
@@ -44,7 +46,7 @@ const crawlNearBlockToken = async () => {
 
     if (rs && rs.tokens) {            
       for(let i in rs.tokens) {
-        rs.tokens[i].c_t = crawlWhaleTypes.NEARBLOCKS;
+        rs.tokens[i].c_t = crawlSources.NEARBLOCKS;
       }
 
       currentCount += rs.tokens.length;
@@ -83,7 +85,7 @@ const crawlNearChanges = async (blockId) => {
 
     if (data && data['result'] && data['result']['changes']) {
       await NearCrawlHist.create({
-        c_t: crawlWhaleTypes.NEARRPC,
+        c_t: crawlSources.NEARRPC,
         block_hash: data.result.block_hash,  
         block_id: blockId
       });
@@ -92,7 +94,7 @@ const crawlNearChanges = async (blockId) => {
       let changesType = [], accountIds = [];
       for (let change of data.result.changes) {
         changesType.push({
-          c_t: crawlWhaleTypes.NEARRPC,
+          c_t: crawlSources.NEARRPC,
           change_type: change.type 
         }); 
 
@@ -115,7 +117,7 @@ const crawlNearAccount = async (accountId) => {
   const moduleGot = await import('got');
   
   if (! accountId) {
-    accountId = 84679490;
+    accountId = "1b56bc105aa76a4fbaadac1e5fed7389c8ea0a16605d63e5b5aaaa04511b9474";
   }
   
   let { body: data } = await moduleGot.got.post(config.rpc_near.main_net, {
@@ -133,13 +135,34 @@ const crawlNearAccount = async (accountId) => {
   data = JSON.parse(data);
 
   if (data && data['result']) {
-    await NearWhale.create({
-      c_t: crawlWhaleTypes.NEARRPC,
-      adr: accountId,
-      amount: data.result.amount / (10 ** 24),    // convert to near
-      block_hash: data.result.block_hash,  
-      block_height: data.result.block_height,
-    });
+    try {
+      // upsert
+      const doc = await NearWhale.findOneAndUpdate(
+        { adr: accountId },
+        {
+          c_t: crawlSources.NEARRPC,
+          adr: accountId,
+          amount: data.result.amount / (10 ** 24),    // convert to near
+          block_hash: data.result.block_hash,  
+          block_height: data.result.block_height,
+        },
+        // If `new` isn't true, `findOneAndUpdate()` will return the
+        // document as it was _before_ it was updated.
+        { new: true }
+      );
+
+      /*
+      await NearWhale.create({
+        c_t: crawlSources.NEARRPC,
+        adr: accountId,
+        amount: data.result.amount / (10 ** 24),    // convert to near
+        block_hash: data.result.block_hash,  
+        block_height: data.result.block_height,
+      });
+      */
+    } catch(e) {
+      logger.error(e);
+    }
   }
 }
 

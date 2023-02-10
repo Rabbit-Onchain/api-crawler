@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
-const { crawlWhaleTypes } = require('../config/whale');
+const { crawlSources } = require('../config/whale');
 
 const nearTokenWhaleSchema = mongoose.Schema(
   {
     c_t: {
       type: Number,
-      enum: [crawlWhaleTypes.NEARBLOCKS],
+      enum: [crawlSources.NEARBLOCKS],
       required: true,
     },
     onchain_market_cap: {

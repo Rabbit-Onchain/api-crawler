@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
-const { crawlWhaleTypes } = require('../config/whale');
+const { crawlSources } = require('../config/whale');
 
 const nearCrawlHistSchema = mongoose.Schema(
   {
     c_t: {
       type: Number,
-      enum: [crawlWhaleTypes.NEARRPC],
+      enum: [crawlSources.NEARRPC],
       required: true,
     },
     block_hash: {

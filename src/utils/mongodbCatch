@@ -1,0 +1,16 @@
+const MONGO_ERROR_TYPES = {
+    duplicate_key: 'duplicate key error',
+};
+
+const isError = (errMsg) => {
+    for (let k in MONGO_ERROR_TYPES) {
+        if (errMsg.includes(MONGO_ERROR_TYPES[k])) {
+            return MONGO_ERROR_TYPES[k];
+        }
+    }
+
+    return 'error';
+};
+
+module.exports = isError;
+module.exports = MONGO_ERROR_TYPES;

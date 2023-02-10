@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
-const { crawlWhaleTypes } = require('../config/whale');
+const { crawlSources } = require('../config/whale');
+
+// index on adr (unique) and amount
+// db.near_whales.createIndex( { "adr": 1 }, { unique: true } )
+// db.near_whales.createIndex( { "amount": -1 } )
 
 const nearWhaleSchema = mongoose.Schema(
   {
     c_t: {      // crawl type: DEBANK, NEARBLOCKS , NEARRPC....
       type: Number,
-      enum: [crawlWhaleTypes.NEARRPC],
+      enum: [crawlSources.NEARRPC],
       required: true,
     },
     adr: {
@@ -37,6 +41,6 @@ nearWhaleSchema.plugin(toJSON);
 /**
  * @typedef Token
  */
-const NearWhale = mongoose.model('whale_near', nearWhaleSchema);
+const NearWhale = mongoose.model('near_whales', nearWhaleSchema);
 
 module.exports = NearWhale;
