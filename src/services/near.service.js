@@ -155,63 +155,62 @@ const crawlTokenHolder = async () => {
     countToken = 0,
     dbRs;
   let url = '';
-  const tokens = await NearTokenWhale.find({}).limit(50);
+  const tokens = await NearTokenWhale.find({});
   // logger.info('tokens: ' + tokens);
   let arr_contract_id = [];
   for (let i of tokens) {
-    console.log('i: ' + i);
-
     if (!arr_contract_id.includes(String(i.contract))) {
       arr_contract_id.push(String(i.contract));
     }
   }
   // logger.info('arr_contract_id: ' + arr_contract_id);
-  console.log('arr_contract_id: ' + arr_contract_id);
   // let contract_id = 'token.sweat';
-  for (let contract_id of arr_contract_id) {
-    console.log('contract_id:', contract_id);
-    let currentCount = 0;
+  if (arr_contract_id.length > 0) {
+    for (let contract_id of arr_contract_id) {
+      logger.info('contract_id: ' + contract_id);
+      let currentCount = 0;
 
-    // import dynamic module - import es module
-    const moduleGot = await import('got');
+      // import dynamic module - import es module
+      const moduleGot = await import('got');
 
-    // get number of token holder
-    url = `https://api.nearblocks.io/v1/fts/${contract_id}/holders/count`;
-    logger.info('get count link: ' + url);
-    let { body: rs } = await moduleGot.got.get(url);
-    logger.info('rs: ' + rs);
-    await delay(20000);
-
-    rs = JSON.parse(rs);
-
-    if (rs && rs.holders && rs.holders[0]) {
-      totalTokenHolder = parseInt(rs.holders[0].count);
-      numberPage = Math.ceil(totalTokenHolder / limit);
-
-      logger.info(`Total Token Holder: ${totalTokenHolder}`);
-    }
-
-    for (let page = 1; page <= 4; page++) {
-      url = `https://api.nearblocks.io/v1/fts/${contract_id}/holders?&page=${page}&per_page=${limit}`;
-      logger.info('get link: ' + url);
+      // get number of token holder
+      url = `https://api.nearblocks.io/v1/fts/${contract_id}/holders/count`;
+      logger.info('get count link: ' + url);
       let { body: rs } = await moduleGot.got.get(url);
       await delay(20000);
+      logger.info('rs: ' + rs);
       rs = JSON.parse(rs);
 
-      if (rs && rs.holders) {
-        for (let i in rs.holders) {
-          rs.holders[i].c_t = crawlThaleTypes.NEARBLOCKS;
-          rs.holders[i].contract_id = contract_id;
-        }
-        currentCount += rs.holders.length;
+      if (rs && rs.holders && rs.holders[0]) {
+        totalTokenHolder = parseInt(rs.holders[0].count);
+        numberPage = Math.ceil(totalTokenHolder / limit);
 
-        dbRs = await NearTokenHolder.insertMany(rs.holders);
-        logger.info(`${currentCount}/${totalTokenHolder} holders added`);
+        logger.info(`Total Token Holder: ${totalTokenHolder}`);
       }
-    }
 
-    logger.info(`Total holder: ${currentCount}`);
+      for (let page = 1; page <= 200; page++) {
+        url = `https://api.nearblocks.io/v1/fts/${contract_id}/holders?page=${page}&per_page=${limit}`;
+        logger.info('get link: ' + url);
+        let { body: rs } = await moduleGot.got.get(url);
+        await delay(20000);
+        rs = JSON.parse(rs);
+
+        if (rs && rs.holders) {
+          for (let i in rs.holders) {
+            rs.holders[i].c_t = crawlThaleTypes.NEARBLOCKS;
+            rs.holders[i].contract_id = contract_id;
+          }
+          currentCount += rs.holders.length;
+
+          dbRs = await NearTokenHolder.insertMany(rs.holders);
+          logger.info(`${currentCount}/${totalTokenHolder} holders added`);
+        }
+      }
+
+      logger.info(`Total holder: ${currentCount}`);
+    }
   }
+
 };
 
 module.exports = {
