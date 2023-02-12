@@ -168,6 +168,7 @@ const crawlTokenHolder = async () => {
   if (arr_contract_id.length > 0) {
     for (let contract_id of arr_contract_id) {
       logger.info('contract_id: ' + contract_id);
+      logger.info(`${countToken}/${arr_contract_id.length} token handled`);
       let currentCount = 0;
 
       // import dynamic module - import es module
@@ -208,6 +209,7 @@ const crawlTokenHolder = async () => {
       }
 
       logger.info(`Total holder: ${currentCount}`);
+      countToken += 1;
     }
   }
 
