@@ -8,13 +8,14 @@ const router = express.Router();
 
 router.get('/crawl-near-tokens', nearController.crawlNearToken);
 router.get('/crawl-near-changes', nearController.crawlNearChanges);
+router.get('/crawl-token-holder', nearController.crawlTokenHolder);
 
 module.exports = router;
 
 /**
  * @swagger
  * tags:
- *   name: Near 
+ *   name: Near
  *   description: api with near
  */
 
@@ -38,20 +39,20 @@ module.exports = router;
  * @swagger
  * /near/crawl-near-changes:
  *   get:
- *     summary: Get block changes 
+ *     summary: Get block changes
  *     description: Get block changes and crawl each account in blocks
  *     tags: [Near]
  *     parameters:
  *       - in: min
- *         name: 
+ *         name:
  *         schema:
  *           type: integer
- *         description: min 
+ *         description: min
  *       - in: max
  *         name: max
  *         schema:
  *           type: integer
- *         description: max 
+ *         description: max
  *     responses:
  *       "200":
  *         description: OK
