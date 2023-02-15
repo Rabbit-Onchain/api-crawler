@@ -10,6 +10,9 @@ router.get('/crawl-near-tokens', nearController.crawlNearToken);
 router.get('/crawl-near-changes', nearController.crawlNearChanges);
 router.get('/crawl-token-holder', nearController.crawlTokenHolder);
 
+//example: http://127.0.0.1:3000/v1/near/get-list-token-holder?contractId=token.sweat&page=2&per_page=25
+router.get('/get-list-token-holder', nearController.getListHolderByContractId);
+
 module.exports = router;
 
 /**
