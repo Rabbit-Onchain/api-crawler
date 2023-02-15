@@ -28,8 +28,19 @@ const crawlTokenHolder = catchAsync(async (req, res) => {
   res.send({});
 });
 
+const getListHolderByContractId = catchAsync(async (req, res) => {
+  const { page = 1, contractId, per_page = 50 } = req.query;
+  if (!contractId) {
+    res.status(400).send("Miss contractId")
+    return
+  }
+  const data = await nearService.getListHolderByContractId(page, per_page, contractId);
+  res.send(data);
+});
+
 module.exports = {
   crawlNearToken,
   crawlNearChanges,
   crawlTokenHolder,
+  getListHolderByContractId
 };

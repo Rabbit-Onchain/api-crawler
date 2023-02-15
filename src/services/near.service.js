@@ -7,7 +7,7 @@ const ApiError = require('../utils/ApiError');
 const { delay } = require('../utils/index');
 const { crawlSources } = require('../config/whale');
 const { parse } = require('dotenv');
-const {MONGO_ERROR_TYPES, isError} = require('../utils/mongodbCatch');
+const { MONGO_ERROR_TYPES, isError } = require('../utils/mongodbCatch');
 
 // API count token on near: https://api.nearblocks.io/v1/fts/count?
 // API get token: https://api.nearblocks.io/v1/fts?&order=desc&sort=onchain_market_cap&page=1&per_page=50
@@ -48,8 +48,8 @@ const crawlNearBlockToken = async () => {
     let { body: rs } = await moduleGot.got.get(url);
     rs = JSON.parse(rs);
 
-    if (rs && rs.tokens) {            
-      for(let i in rs.tokens) {
+    if (rs && rs.tokens) {
+      for (let i in rs.tokens) {
         rs.tokens[i].c_t = crawlSources.NEARBLOCKS;
       }
 
@@ -91,7 +91,7 @@ const crawlNearChanges = async (blockId) => {
     if (data && data['result'] && data['result']['changes']) {
       await NearCrawlHist.create({
         c_t: crawlSources.NEARRPC,
-        block_hash: data.result.block_hash,  
+        block_hash: data.result.block_hash,
         block_id: blockId
       });
 
@@ -101,8 +101,8 @@ const crawlNearChanges = async (blockId) => {
       for (let change of data.result.changes) {
         changesType.push({
           c_t: crawlSources.NEARRPC,
-          change_type: change.type 
-        }); 
+          change_type: change.type
+        });
 
         accountIds.push(change.account_id);
 
@@ -120,8 +120,8 @@ const crawlNearChanges = async (blockId) => {
 
 const crawlNearAccount = async (accountId) => {
   const moduleGot = await import('got');
-  
-  if (! accountId) {
+
+  if (!accountId) {
     accountId = "1b56bc105aa76a4fbaadac1e5fed7389c8ea0a16605d63e5b5aaaa04511b9474";
   }
 
@@ -148,7 +148,7 @@ const crawlNearAccount = async (accountId) => {
           c_t: crawlSources.NEARRPC,
           adr: accountId,
           amount: data.result.amount / (10 ** 24),    // convert to near
-          block_hash: data.result.block_hash,  
+          block_hash: data.result.block_hash,
           block_height: data.result.block_height,
         },
         // If `new` isn't true, `findOneAndUpdate()` will return the
@@ -165,7 +165,7 @@ const crawlNearAccount = async (accountId) => {
         block_height: data.result.block_height,
       });
       */
-    } catch(e) {
+    } catch (e) {
       logger.error(e);
     }
   }
@@ -238,8 +238,20 @@ const crawlTokenHolder = async () => {
 
 };
 
+const getListHolderByContractId = async (page, per_page, contractId) => {
+  let totalPage = 0,
+    limit = per_page, totalDocument = 0
+  totalDocument = await NearTokenHolder.countDocuments({ contract_id: contractId })
+  const holders = await NearTokenHolder.find({ contract_id: contractId }, 'account amount').skip((page - 1) * limit).limit(limit);
+  // logger.info('holders: ' + holders);
+  // logger.info('totalPage: ' + totalPage);
+  // logger.info('page: ' + page);
+  return { holders, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
+}
+
 module.exports = {
   crawlNearBlockToken,
   crawlNearChanges,
   crawlTokenHolder,
+  getListHolderByContractId
 };
