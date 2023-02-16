@@ -9,9 +9,8 @@ const router = express.Router();
 router.get('/crawl-near-tokens', nearController.crawlNearToken);
 router.get('/crawl-near-changes', nearController.crawlNearChanges);
 router.get('/crawl-token-holder', nearController.crawlTokenHolder);
-
-//example: http://127.0.0.1:3000/v1/near/get-list-token-holder?contractId=token.sweat&page=2&per_page=25
 router.get('/get-list-token-holder', nearController.getListHolderByContractId);
+router.get('/get-list-token', nearController.getListToken);
 
 module.exports = router;
 
@@ -56,6 +55,80 @@ module.exports = router;
  *         schema:
  *           type: integer
  *         description: max
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ */
+
+/**
+ * @swagger
+ * /near/crawl-token-holder:
+ *   get:
+ *     summary: Crawl top Near Token Holders from Nearblocks
+ *     description: Crawl top Near Token Holders from Nearblocks and save it to the Database
+ *     tags: [Near]
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ */
+/**
+ * @swagger
+ * /near/get-list-token-holder:
+ *   get:
+ *     summary: Get list top Near Token Holders
+ *     description: Get list top Near Token Holders
+ *     tags: [Near]
+ *     parameters:
+ *       - in: contractId
+ *         name: contractId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ContractId
+ *       - in: page
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: per_page
+ *         name: per_page
+ *         schema:
+ *           type: integer
+ *         description: Amount of holders per a page
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ */
+/**
+ * @swagger
+ * /near/get-list-token:
+ *   get:
+ *     summary: Get list top Near Token 
+ *     description: Get list top Near Token 
+ *     tags: [Near]
+ *     parameters:
+ *       - in: page
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: per_page
+ *         name: per_page
+ *         schema:
+ *           type: integer
+ *         description: Amount of tokens per a page
  *     responses:
  *       "200":
  *         description: OK

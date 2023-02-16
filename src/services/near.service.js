@@ -249,9 +249,21 @@ const getListHolderByContractId = async (page, per_page, contractId) => {
   return { holders, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
 }
 
+const getListToken = async (page, per_page) => {
+  let totalPage = 0,
+    limit = per_page, totalDocument = 0
+  totalDocument = await NearTokenWhale.countDocuments({})
+  const tokens = await NearTokenWhale.find({}).skip((page - 1) * limit).limit(limit);
+  logger.info('tokens: ' + tokens);
+  logger.info('totalPage: ' + totalPage);
+  logger.info('page: ' + page);
+  return { tokens, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
+}
+
 module.exports = {
   crawlNearBlockToken,
   crawlNearChanges,
   crawlTokenHolder,
-  getListHolderByContractId
+  getListHolderByContractId,
+  getListToken,
 };
