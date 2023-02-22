@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
 const { crawlSources } = require('../config/whale');
 
-const nearTokenWhaleSchema = mongoose.Schema(
+const nearTokenSchema = mongoose.Schema(
   {
     c_t: {
       type: Number,
@@ -68,11 +68,11 @@ const nearTokenWhaleSchema = mongoose.Schema(
 );
 
 // add plugin that converts mongoose to json
-nearTokenWhaleSchema.plugin(toJSON);
+nearTokenSchema.plugin(toJSON);
 
 /**
  * @typedef Token
  */
-const NearTokenWhale = mongoose.model('near_token', nearTokenWhaleSchema);
+const NearToken = mongoose.model('near_token', nearTokenSchema);
 
-module.exports = NearTokenWhale;
+module.exports = NearToken;

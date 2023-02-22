@@ -2,7 +2,7 @@ const logger = require('../config/logger');
 const config = require('../config/config');
 const moment = require('moment');
 const httpStatus = require('http-status');
-const { NearCrawlHist, NearTokenWhale, NearChanges, NearWhale, NearTokenHolder } = require('../models');
+const { NearCrawlHist, NearToken, NearChanges, NearWhale, NearTokenHolder } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { delay } = require('../utils/index');
 const { crawlSources } = require('../config/whale');
@@ -15,6 +15,20 @@ const { MONGO_ERROR_TYPES, isError } = require('../utils/mongodbCatch');
 
 // RPC on near https://rpc.mainnet.near.org
 // for historical data https://archival-rpc.mainnet.near.org
+
+const getNearToken = async (page, per_page) => {
+  try {
+    per_page = parseInt(per_page);
+    let totalPage = 0,
+    limit = per_page, totalDocument = 0
+    totalDocument = await NearToken.countDocuments({});
+    page = parseInt(page) + 1;
+    const whales = await NearToken.find({ }, '').skip((page - 1) * limit).limit(limit);
+    return { whales, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
+  } catch(e) {
+    logger.error(e);
+  }
+}
 
 const crawlNearBlockToken = async () => {
   let numberPage = 0,
@@ -55,7 +69,7 @@ const crawlNearBlockToken = async () => {
 
       currentCount += rs.tokens.length;
 
-      dbRs = await NearTokenWhale.insertMany(rs.tokens);
+      dbRs = await NearToken.insertMany(rs.tokens);
       logger.info(`${currentCount}/${totalToken} tokens added`);
       await delay(5000);
     }
@@ -237,6 +251,18 @@ const crawlTokenHolder = async () => {
   }
 
 };
+
+const getWhales = async (page, per_page) => {
+  try {
+    let totalPage = 0,
+    limit = per_page, totalDocument = 0
+    totalDocument = await Whale.countDocuments({});
+    const whales = await Whale.find({ }, '').skip((page - 1) * limit).limit(limit);
+    return { whales, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
+  } catch(e) {
+    logger.error(e);
+  }
+}
 
 const getListHolderByContractId = async (page, per_page, contractId) => {
   let totalPage = 0,

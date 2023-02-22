@@ -5,10 +5,20 @@ const catchAsync = require('../utils/catchAsync');
 const { nearService } = require('../services');
 const { delay } = require('../utils/index');
 
+// crawl near tokens
 const crawlNearToken = catchAsync(async (req, res) => {
   nearService.crawlNearBlockToken();
   // await debankService.createWhale(whaleData);
   res.send({});
+});
+
+/**
+ * Get near tokens
+ */
+const getNearTokens = catchAsync(async (req, res) => {
+  const { page = 1, per_page = 50 } = req.query;
+  const data = await nearService.getNearToken(page, per_page);
+  res.send(data);
 });
 
 const crawlNearChanges = catchAsync(async (req, res) => {
