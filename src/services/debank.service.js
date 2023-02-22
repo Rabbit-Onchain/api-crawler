@@ -39,6 +39,8 @@ const crawlDebankWhale = async () => {
       dbRs = await Whale.insertMany(rs.data.whales);
       logger.info(`${currentCount}/${totalWhale} whales added`);
       await delay(5000);
+
+      // TODO: delete avatar of tokens
     }
 
     hasWhale = (countWhale < totalWhale);
@@ -48,6 +50,22 @@ const crawlDebankWhale = async () => {
   logger.info(`Total whale: ${currentCount}`);
 };
 
+const getWhales = async (page, per_page) => {
+  try {
+    per_page = parseInt(per_page);
+    let totalPage = 0,
+    limit = per_page, totalDocument = 0
+    totalDocument = await Whale.countDocuments({});
+    page = parseInt(page) + 1;
+    const whales = await Whale.find({ }, '').skip((page - 1) * limit).limit(limit);
+    return { whales, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
+  } catch(e) {
+    logger.error(e);
+  }
+}
+
+
 module.exports = {
   crawlDebankWhale,
+  getWhales,
 };
