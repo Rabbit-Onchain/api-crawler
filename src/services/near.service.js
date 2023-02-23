@@ -23,8 +23,8 @@ const getNearToken = async (page, per_page) => {
     limit = per_page, totalDocument = 0
     totalDocument = await NearToken.countDocuments({});
     page = parseInt(page) + 1;
-    const whales = await NearToken.find({ }, '').skip((page - 1) * limit).limit(limit);
-    return { whales, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
+    const data = await NearToken.find({ }, '').skip((page - 1) * limit).limit(limit);
+    return { data, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
   } catch(e) {
     logger.error(e);
   }
