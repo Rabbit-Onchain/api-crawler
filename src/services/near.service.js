@@ -279,5 +279,6 @@ module.exports = {
   crawlNearBlockToken,
   crawlNearChanges,
   crawlTokenHolder,
+  getNearToken,
   getListHolderByContractId
 };
