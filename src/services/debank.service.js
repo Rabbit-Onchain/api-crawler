@@ -57,22 +57,18 @@ const crawlDebankWhale = async () => {
                 // Nếu không tồn tại thì tạo mới
                 fs.mkdirSync(path.join(pathSrc, 'public/images', tokenOfWhale['symbol']));
               }
-              await download.image({
+              const { filename } = await download.image({
                 url: tokenOfWhale['logo_url'],
                 dest: path.join(pathSrc, 'public/images', tokenOfWhale['symbol']),
               })
-                .then(async ({ filename }) => {
-                  let arr = filename.split(/\\/)
-                  if (tokenOfWhale['symbol']) {
-                    // nếu trong db đã lưu thông tin logo token thì update còn không thì tạo mới
-                    await Logo.findOneAndUpdate({ token: tokenOfWhale['symbol'] }, {
-                      token: tokenOfWhale['symbol'],
-                      logo_url: path.join('public/images', tokenOfWhale['symbol'], arr[arr.length - 1])
-                    }, { upsert: true });
-                    return {}
-                  }
-                })
-                .catch((err) => console.error(err));
+              let arr = filename.split(/\\/)
+              if (tokenOfWhale['symbol']) {
+                // nếu trong db đã lưu thông tin logo token thì update còn không thì tạo mới
+                await Logo.findOneAndUpdate({ token: tokenOfWhale['symbol'] }, {
+                  token: tokenOfWhale['symbol'],
+                  logo_url: path.join('public/images', tokenOfWhale['symbol'], arr[arr.length - 1])
+                }, { upsert: true });
+              }
             }
           }
         }
