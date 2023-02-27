@@ -20,12 +20,12 @@ const getNearToken = async (page, per_page) => {
   try {
     per_page = parseInt(per_page);
     let totalPage = 0,
-    limit = per_page, totalDocument = 0
+      limit = per_page, totalDocument = 0
     totalDocument = await NearToken.countDocuments({});
     page = parseInt(page) + 1;
-    const data = await NearToken.find({ }, '').skip((page - 1) * limit).limit(limit);
+    const data = await NearToken.find({}, '').skip((page - 1) * limit).limit(limit);
     return { data, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
-  } catch(e) {
+  } catch (e) {
     logger.error(e);
   }
 }
@@ -192,7 +192,7 @@ const crawlTokenHolder = async () => {
     countToken = 0,
     dbRs;
   let url = '';
-  const tokens = await NearTokenWhale.find({});
+  const tokens = await NearToken.find({});
   // logger.info('tokens: ' + tokens);
   let arr_contract_id = [];
   for (let i of tokens) {
@@ -215,7 +215,7 @@ const crawlTokenHolder = async () => {
       url = `https://api.nearblocks.io/v1/fts/${contract_id}/holders/count`;
       logger.info('get count link: ' + url);
       let { body: rs } = await moduleGot.got.get(url);
-      await delay(20000);
+      await delay(5000);
       logger.info('rs: ' + rs);
       rs = JSON.parse(rs);
 
@@ -230,12 +230,12 @@ const crawlTokenHolder = async () => {
         url = `https://api.nearblocks.io/v1/fts/${contract_id}/holders?page=${page}&per_page=${limit}`;
         logger.info('get link: ' + url);
         let { body: rs } = await moduleGot.got.get(url);
-        await delay(20000);
+        await delay(5000);
         rs = JSON.parse(rs);
 
         if (rs && rs.holders) {
           for (let i in rs.holders) {
-            rs.holders[i].c_t = crawlThaleTypes.NEARBLOCKS;
+            rs.holders[i].c_t = crawlSources.NEARBLOCKS;
             rs.holders[i].contract_id = contract_id;
           }
           currentCount += rs.holders.length;
@@ -255,14 +255,15 @@ const crawlTokenHolder = async () => {
 const getWhales = async (page, per_page) => {
   try {
     let totalPage = 0,
-    limit = per_page, totalDocument = 0
+      limit = per_page, totalDocument = 0
     totalDocument = await Whale.countDocuments({});
-    const whales = await Whale.find({ }, '').skip((page - 1) * limit).limit(limit);
+    const whales = await Whale.find({}, '').skip((page - 1) * limit).limit(limit);
     return { whales, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
-  } catch(e) {
+  } catch (e) {
     logger.error(e);
   }
 }
+
 
 const getListHolderByContractId = async (page, per_page, contractId) => {
   let totalPage = 0,
@@ -275,10 +276,22 @@ const getListHolderByContractId = async (page, per_page, contractId) => {
   return { holders, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
 }
 
+const getListToken = async (page, per_page) => {
+  let totalPage = 0,
+    limit = per_page, totalDocument = 0
+  totalDocument = await NearToken.countDocuments({})
+  const tokens = await NearToken.find({}).skip((page - 1) * limit).limit(limit);
+  logger.info('tokens: ' + tokens);
+  logger.info('totalPage: ' + totalPage);
+  logger.info('page: ' + page);
+  return { tokens, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
+}
+
 module.exports = {
   crawlNearBlockToken,
   crawlNearChanges,
   crawlTokenHolder,
   getNearToken,
-  getListHolderByContractId
+  getListHolderByContractId,
+  getListToken
 };
