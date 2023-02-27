@@ -64,8 +64,20 @@ const getWhales = async (page, per_page) => {
   }
 }
 
+// get detail of whale
+const getWhale = async (address) => {
+  try {
+    const whale = await Whale.findOne({ 
+      adr: address 
+    });
+    return { whale};
+  } catch(e) {
+    logger.error(e);
+  }
+}
 
 module.exports = {
   crawlDebankWhale,
   getWhales,
+  getWhale
 };
