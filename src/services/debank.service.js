@@ -64,10 +64,12 @@ const crawlDebankWhale = async () => {
               let arr = filename.split(/\\/)
               if (tokenOfWhale['symbol']) {
                 // nếu trong db đã lưu thông tin logo token thì update còn không thì tạo mới
+                let pathLogo = path.join(tokenOfWhale['symbol'], arr[arr.length - 1])
                 await Logo.findOneAndUpdate({ token: tokenOfWhale['symbol'] }, {
                   token: tokenOfWhale['symbol'],
-                  logo_url: path.join('public/images', tokenOfWhale['symbol'], arr[arr.length - 1])
+                  logo_url: pathLogo
                 }, { upsert: true });
+                tokenOfWhale.logo_url = pathLogo
               }
             }
           }
