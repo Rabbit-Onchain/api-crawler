@@ -11,7 +11,7 @@ const { token } = require('morgan');
 const path = require('path');
 const fs = require('fs');
 
-
+// crawl whales from debank
 const crawlDebankWhale = async () => {
   // lấy đường dẫn thư mục gốc
   let pathSrc = __dirname;
@@ -69,6 +69,7 @@ const crawlDebankWhale = async () => {
                   logo_url: path.join('public/images', tokenOfWhale['symbol'], arr[arr.length - 1])
                 }, { upsert: true });
               }
+              // TODO: update link of logo_url 
             }
           }
         }
@@ -77,7 +78,6 @@ const crawlDebankWhale = async () => {
       dbRs = await Whale.insertMany(rs.data.whales);
       logger.info(`${currentCount}/${totalWhale} whales added`);
       await delay(5000);
-      // TODO: delete avatar of tokens
     }
 
     hasWhale = (countWhale < totalWhale);
@@ -87,6 +87,40 @@ const crawlDebankWhale = async () => {
   logger.info(`Total whale: ${currentCount}`);
 };
 
+// crawl whale detail from debank
+// debank api: https://api.debank.com/token/cache_balance_list?user_addr=0x73af3bcf944a6559933396c1577b257e2054d935
+const crawlWhaleDetail = async() => {
+  let limit = 50, totalDocument = 0, totalHandled = 0, page = 1;
+  totalDocument = await Whale.countDocuments({});
+  let whales, url;
+  const moduleGot = await import('got');
+
+  while (totalHandled < totalDocument) {
+    whales = await Whale.find({}, '').skip((page - 1) * limit).limit(limit).sort({'stats.usd_value': 'desc'});
+
+    if (whales) {
+      for (let whale of whales) {
+        totalHandled++;
+        page++;
+        url = `https://api.debank.com/token/cache_balance_list?user_addr=${whale['adr']}`
+        logger.info('get link: ' + url);
+        let { body: rs } = await moduleGot.got.get(url);
+        rs = JSON.parse(rs);
+
+        whale['stats']['balance_list'] = rs;
+
+        await Whale.findOneAndUpdate({ adr: whale['adr'] }, {
+          adr: whale['adr'],
+          stats: whale['stats']
+        }, { upsert: true });
+
+        console.log(`updated adr ${whale['adr']}`)
+      }
+    }
+
+  }    
+}
+
 const getWhales = async (page, per_page) => {
   try {
     per_page = parseInt(per_page);
@@ -94,7 +128,7 @@ const getWhales = async (page, per_page) => {
       limit = per_page, totalDocument = 0
     totalDocument = await Whale.countDocuments({});
     page = parseInt(page) + 1;
-    const whales = await Whale.find({}, '').skip((page - 1) * limit).limit(limit);
+    const whales = await Whale.find({}, '').skip((page - 1) * limit).limit(limit).sort({'stats.usd_value': 'desc'});
     return { whales, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
   } catch (e) {
     logger.error(e);
@@ -116,5 +150,6 @@ const getWhale = async (address) => {
 module.exports = {
   crawlDebankWhale,
   getWhales,
-  getWhale
+  getWhale,
+  crawlWhaleDetail
 };
