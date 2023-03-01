@@ -133,13 +133,25 @@ const crawlDebankWhaleHistory = async () => {
         hasHistory = false
       }
     }
-    logger.info(`executed ${i}/${totalWhale} whalevm`)
+    logger.info(`executed ${i}/${totalWhale} whale`)
     i++;
   }
 };
+// get detail of whale
+const getWhale = async (address) => {
+  try {
+    const whale = await Whale.findOne({ 
+      adr: address 
+    });
+    return { whale};
+  } catch(e) {
+    logger.error(e);
+  }
+}
 
 module.exports = {
   crawlDebankWhale,
   getWhales,
   crawlDebankWhaleHistory,
+  getWhale
 };

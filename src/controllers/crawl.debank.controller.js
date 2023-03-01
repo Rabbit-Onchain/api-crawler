@@ -22,8 +22,22 @@ const crawlWhaleHistory = catchAsync(async (req, res) => {
   res.send({});
 });
 
+const getWhaleDetail = catchAsync(async (req, res) => {
+  const { adr } = req.query;
+  console.log(adr);
+  let data = {};
+  if (adr) {
+    data = await debankService.getWhale(adr);
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Bad Request');
+  }
+
+  res.send(data);
+});
+
 module.exports = {
   crawlWhale,
   getWhales,
   crawlWhaleHistory,
+  getWhaleDetail,
 };

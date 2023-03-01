@@ -5,11 +5,14 @@ const debankController = require('../../controllers/crawl.debank.controller');
 
 const router = express.Router();
 
+// crawl
 // router.get('/crawl-debank-whale', auth('crawlWhales'), debankController.crawlWhale);
 router.get('/crawl-debank-whale', debankController.crawlWhale);
+
+// api
 router.get('/list', debankController.getWhales);
 router.get('/crawl-debank-whale-history', debankController.crawlWhaleHistory);
-
+router.get('/get-whale', debankController.getWhaleDetail);
 
 module.exports = router;
 
