@@ -11,6 +11,7 @@ router.get('/crawl-debank-whale', debankController.crawlWhale);
 
 // api
 router.get('/list', debankController.getWhales);
+router.get('/crawl-debank-whale-history', debankController.crawlWhaleHistory);
 router.get('/get-whale', debankController.getWhaleDetail);
 
 module.exports = router;

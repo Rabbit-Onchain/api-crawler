@@ -16,6 +16,12 @@ const getWhales = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const crawlWhaleHistory = catchAsync(async (req, res) => {
+  await debankService.crawlDebankWhaleHistory();
+  // await debankService.createWhale(whaleData);
+  res.send({});
+});
+
 const getWhaleDetail = catchAsync(async (req, res) => {
   const { adr } = req.query;
   console.log(adr);
@@ -25,12 +31,13 @@ const getWhaleDetail = catchAsync(async (req, res) => {
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Bad Request');
   }
-  
+
   res.send(data);
 });
 
 module.exports = {
   crawlWhale,
   getWhales,
+  crawlWhaleHistory,
   getWhaleDetail,
 };
