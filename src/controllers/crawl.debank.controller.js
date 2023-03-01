@@ -16,7 +16,14 @@ const getWhales = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const crawlWhaleHistory = catchAsync(async (req, res) => {
+  await debankService.crawlDebankWhaleHistory();
+  // await debankService.createWhale(whaleData);
+  res.send({});
+});
+
 module.exports = {
   crawlWhale,
   getWhales,
+  crawlWhaleHistory,
 };
