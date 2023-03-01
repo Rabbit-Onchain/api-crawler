@@ -8,6 +8,7 @@ const router = express.Router();
 // crawl
 // router.get('/crawl-debank-whale', auth('crawlWhales'), debankController.crawlWhale);
 router.get('/crawl-debank-whale', debankController.crawlWhale);
+router.get('/crawl-debank-whale-detail', debankController.crawlWhaleDetail);
 
 // api
 router.get('/list', debankController.getWhales);
