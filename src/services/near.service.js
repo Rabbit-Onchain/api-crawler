@@ -282,5 +282,4 @@ module.exports = {
   crawlTokenHolder,
   getNearToken,
   getListHolderByContractId,
-  getListToken
 };
