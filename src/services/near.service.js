@@ -16,20 +16,6 @@ const { MONGO_ERROR_TYPES, isError } = require('../utils/mongodbCatch');
 // RPC on near https://rpc.mainnet.near.org
 // for historical data https://archival-rpc.mainnet.near.org
 
-const getNearToken = async (page, per_page) => {
-  try {
-    per_page = parseInt(per_page);
-    let totalPage = 0,
-      limit = per_page, totalDocument = 0
-    totalDocument = await NearToken.countDocuments({});
-    page = parseInt(page) + 1;
-    const data = await NearToken.find({}, '').skip((page - 1) * limit).limit(limit);
-    return { data, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
-  } catch (e) {
-    logger.error(e);
-  }
-}
-
 const crawlNearBlockToken = async () => {
   let numberPage = 0,
     limit = 50,
@@ -276,15 +262,18 @@ const getListHolderByContractId = async (page, per_page, contractId) => {
   return { holders, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
 }
 
-const getListToken = async (page, per_page) => {
-  let totalPage = 0,
-    limit = per_page, totalDocument = 0
-  totalDocument = await NearToken.countDocuments({})
-  const tokens = await NearToken.find({}).skip((page - 1) * limit).limit(limit);
-  logger.info('tokens: ' + tokens);
-  logger.info('totalPage: ' + totalPage);
-  logger.info('page: ' + page);
-  return { tokens, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
+const getNearToken = async (page, per_page) => {
+  try {
+    per_page = parseInt(per_page);
+    let totalPage = 0,
+      limit = per_page, totalDocument = 0
+    totalDocument = await NearToken.countDocuments({});
+    page = parseInt(page) + 1;
+    const data = await NearToken.find({}, '').skip((page - 1) * limit).limit(limit);
+    return { data, totalDocument, totalPage: Math.floor(totalDocument / limit), currentPage: page };
+  } catch (e) {
+    logger.error(e);
+  }
 }
 
 module.exports = {
